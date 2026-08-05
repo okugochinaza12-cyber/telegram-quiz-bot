@@ -34,22 +34,31 @@ questions = [
     {"q":"Which is the largest continent?","options":["Africa","Europe","Asia","Australia"],"answer":"Asia"},
 ]
 progress={}
-async def sendq(update):
- u=update.effective_user.id;i=progress.get(u,0)
- if i>=len(questions):
-  await update.message.reply_text("Quiz completed!");return
- q=questions[i]
- t=f"{i+1}. {q['q']}\n"+"\n".join(q["options"])
- await update.message.reply_text(t)
-async def start(update:Update,context:ContextTypes.DEFAULT_TYPE):
- progress[update.effective_user.id]=0;await sendq(update)
-async def ans(update:Update,context:ContextTypes.DEFAULT_TYPE):
- u=update.effective_user.id;i=progress.get(u,0)
- if update.message.text.strip().upper()==questions[i]["answer"]:
-  await update.message.reply_text("Correct")
- else:
-  await update.message.reply_text("Wrong")
- progress[u]=i+1;await sendq(update)
+async def ans(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    u = update.effective_user.id
+    i = progress.get(u, 0)
+
+    if i >= len(questions):
+        return
+
+    try:
+        choice = int(update.message.text.strip())
+    except ValueError:
+        await update.message.reply_text("Please reply with a number (1-4).")
+        return
+
+    if choice < 1 or choice > 4:
+        await update.message.reply_text("Choose a number between 1 and 4.")
+        return
+
+    if q := questions[i]:
+        if q["options"][choice - 1] == q["answer"]:
+            await update.message.reply_text("✅ Correct")
+        else:
+            await update.message.reply_text(f"❌ Wrong.\nCorrect answer: {q['answer']}")
+
+    progress[u] = i + 1
+    await sendq(update)
 app=ApplicationBuilder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start",start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,ans))
