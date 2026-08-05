@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder,CommandHandler,MessageHandler,ContextTypes,filters
-BOT_TOKEN="YOUR_BOT_TOKEN"
+BOT_TOKEN="8728343792:AAHLUsotWds4BPPKzP-XxGJCmNlUs9b0TC4"
 questions=[
     {"q":"Question 1?","options":["A","B","C","D"],"answer":"A"},
     {"q":"Question 2?","options":["A","B","C","D"],"answer":"A"},
