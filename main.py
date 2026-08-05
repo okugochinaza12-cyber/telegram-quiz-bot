@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder,CommandHandler,MessageHandler,ContextTypes,filters
-BOT_TOKEN="8728343792:AAHLUsotWds4BPPKzP-XxGJCmNlUs9b0TC4"
+BOT_TOKEN="os.getenv("BOT_TOKEN")"
 questions = [
     {"q":"What is the capital of Nigeria?","options":["Lagos","Abuja","Kano","Port Harcourt"],"answer":"Abuja"},
     {"q":"Which planet is known as the Red Planet?","options":["Earth","Mars","Venus","Jupiter"],"answer":"Mars"},
@@ -61,9 +61,43 @@ async def sendq(update):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     progress[update.effective_user.id] = 0
     await sendq(update)
+
+
+async def ans(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    u = update.effective_user.id
+    i = progress.get(u, 0)
+
+    if i >= len(questions):
+        await update.message.reply_text("🎉 Quiz Finished!")
+        return
+
+    try:
+        choice = int(update.message.text.strip())
+    except ValueError:
+        await update.message.reply_text("Please reply with 1, 2, 3 or 4.")
+        return
+
+    if choice < 1 or choice > 4:
+        await update.message.reply_text("Please choose a number between 1 and 4.")
+        return
+
+    q = questions[i]
+
+    if q["options"][choice - 1] == q["answer"]:
+        await update.message.reply_text("✅ Correct!")
+    else:
+        await update.message.reply_text(
+            f"❌ Wrong!\nCorrect answer: {q['answer']}"
+        )
+
+    progress[u] = i + 1
+    await sendq(update)
+
+
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, ans))
 
+print("Bot is running...")
 app.run_polling()
