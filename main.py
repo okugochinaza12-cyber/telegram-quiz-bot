@@ -1,6 +1,8 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder,CommandHandler,MessageHandler,ContextTypes,filters
-BOT_TOKEN="os.getenv("BOT_TOKEN")"
+import os
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 questions = [
     {"q":"What is the capital of Nigeria?","options":["Lagos","Abuja","Kano","Port Harcourt"],"answer":"Abuja"},
     {"q":"Which planet is known as the Red Planet?","options":["Earth","Mars","Venus","Jupiter"],"answer":"Mars"},
